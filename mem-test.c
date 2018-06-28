@@ -180,23 +180,24 @@ int main(int argc, char **argv) {
       #pragma omp section
       { reports[station][5] = dram_test( READ, "station input (DRAM -> GPU)", NR_PACKETS * 9000, PROCESSING_BUFFER_SIZE * 9000, 3.0 ); }
 
-      /* ----- Emulate a minimum reduction of the data volume by a factor 4 */
+      /* ----- Emulate a minimum reduction of the data volume by this factor */
+      #define REDUCTION_FACTOR                2
 
       /* GPU -> DRAM */
       #pragma omp section
-      { reports[station][6] = dram_test( WRITE, "processing output (GPU -> DRAM)", NR_PACKETS * 9000 / 4, PROCESSING_BUFFER_SIZE * 9000, 3.0 / 4); }
+      { reports[station][6] = dram_test( WRITE, "processing output (GPU -> DRAM)", NR_PACKETS * 9000 / REDUCTION_FACTOR, PROCESSING_BUFFER_SIZE * 9000, 3.0 / REDUCTION_FACTOR); }
 
       /* Stage output (BF mode) */
       #pragma omp section
-      { reports[station][7] = dram_test( COPY, "processing output (BF staging)", NR_PACKETS * 9000 / 4, PROCESSING_BUFFER_SIZE * 9000, 3.0 / 4); }
+      { reports[station][7] = dram_test( COPY, "processing output (BF staging)", NR_PACKETS * 9000 / REDUCTION_FACTOR, PROCESSING_BUFFER_SIZE * 9000, 3.0 / REDUCTION_FACTOR); }
 
       /* Copy output to TCP buffer (BF mode) */
       #pragma omp section
-      { reports[station][8] = dram_test( COPY, "processing output (user -> kernel)", NR_PACKETS * 9000 / 4, PROCESSING_BUFFER_SIZE * 9000, 3.0 / 4); }
+      { reports[station][8] = dram_test( COPY, "processing output (user -> kernel)", NR_PACKETS * 9000 / REDUCTION_FACTOR, PROCESSING_BUFFER_SIZE * 9000, 3.0 / REDUCTION_FACTOR); }
 
       /* DRAM -> NIC */
       #pragma omp section
-      { reports[station][9] = dram_test( READ, "processing output (DRAM -> NIC)", NR_PACKETS * 9000 / 4, PROCESSING_BUFFER_SIZE * 9000, 3.0 / 4); }
+      { reports[station][9] = dram_test( READ, "processing output (DRAM -> NIC)", NR_PACKETS * 9000 / REDUCTION_FACTOR, PROCESSING_BUFFER_SIZE * 9000, 3.0 / REDUCTION_FACTOR); }
     }
   }
 
