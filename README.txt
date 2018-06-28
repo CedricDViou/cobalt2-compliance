@@ -1,21 +1,36 @@
 Tests
 -----------------------------------
 
-This suite includes the following tests:
+This suite describes the following tests:
 
   mem-test:   Tests memory bandwidth (DRAM) performance.
   gpu-copy:   Tests PCIe bandwidth performance towards NVIDIA GPUs.
   eth-test:   Tests UDP bandwidth of a single 10GbE port.
-
-Furthermore, the following tests are performed using external tooling:
-
   ib-bw:      Measures the maximum InfiniBand transfer speed.
 
-For a machine to be compliant, all tests must show compliance. It is
-permitted to force Linux to schedule the tests with real-time priority
-(chrt -f 1 <command>) if needed to obtain the required performance.
+For a machine to be compliant, all tests must show compliance under
+the following system settings:
 
-Building all tests
+* Set the CPU frequency scaling to `performance', f.e. by:
+
+    cpupower frequency-set -g performance
+    
+* Disable Intel Turbo Boost, f.e. by:
+
+   echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+
+Hints increase test performance (optional):
+
+* Schedule the tests with real-time priority:
+  
+    chrt -f 1 <command>
+    
+* Schedule the test on a specific NUMA node (X=0 or 1):
+
+    numactl --cpubind=X --membind=X <command>
+    
+
+Building the tests
 -----------------------------------
 1. You need the following libraries and tools installed:
 
