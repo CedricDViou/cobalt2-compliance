@@ -29,6 +29,11 @@ Hints increase test performance (optional):
 
     numactl --cpubind=X --membind=X <command>
     
+* For eth-test, tune the Linux network and UDP buffers, f.e.:
+
+    sysctl -w net.core.rmem_max=16777216
+    sysctl -w net.ipv4.udp_mem='262144 327680 393216'
+    sysctl -w net.core.netdev_max_backlog=250000
 
 Building the tests
 -----------------------------------
