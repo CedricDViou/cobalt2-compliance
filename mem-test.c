@@ -143,6 +143,8 @@ int main(int argc, char **argv) {
   int station;
   struct report reports[NR_STATIONS][NR_STEPS];
 
+  /* Not all steps actually execute in COBALT with 1 thread per station.    
+     However, this should be close enough to show fitness for purpose. */
   #pragma omp parallel for num_threads(NR_STATIONS)
   for (station = 0; station < NR_STATIONS; station++) {
     /* Evenly divide stations among the NUMA domains. */
