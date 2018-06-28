@@ -111,27 +111,6 @@ for 2 GPUs, if both are connected through dedicated PCI 3.0 x16 links.
 
 Both total read and write speeds must be >=180 Gbit/s.
 
-## Tips to increase performance (if necessary):
-
-* Enable Jumbo frames, f.e. by:
-```
-    ip link set ethX mtu 9000
-```
-* Increase the Linux network buffers, f.e. by:
-```
-    sysctl -w net.core.rmem_max=16777216
-    sysctl -w net.core.rmem_default=16777216
-    sysctl -w net.core.wmem_max=16777216
-    sysctl -w net.core.wmem_default=16777216
-    sysctl -w net.core.netdev_max_backlog=250000
-    sysctl -w net.ipv4.udp_mem='262144 327680 393216'
-```
-* Constrict the test to the CPU in the NUMA node (X=0 or 1) hosting
-  the tested 10GbE card:
-```
-    numactl --cpubind=X --membind=X <command>
-```
-
 # eth-test: Test 10GbE UDP reception
 
 This test streams 9 Gbit/s of UDP data to a single 10GbE port. Two machines
@@ -173,6 +152,27 @@ This test must be repeated for each 10GbE interface in the test machine.
 For each interface, the total speed must be >=9.00 Gbit/s, and the average
 loss 0.000%.
 
+## Tips to increase performance (if necessary):
+
+* Enable Jumbo frames, f.e. by:
+```
+    ip link set ethX mtu 9000
+```
+* Increase the Linux network buffers, f.e. by:
+```
+    sysctl -w net.core.rmem_max=16777216
+    sysctl -w net.core.rmem_default=16777216
+    sysctl -w net.core.wmem_max=16777216
+    sysctl -w net.core.wmem_default=16777216
+    sysctl -w net.core.netdev_max_backlog=250000
+    sysctl -w net.ipv4.udp_mem='262144 327680 393216'
+```
+* Constrict the test to the CPU in the NUMA node (X=0 or 1) hosting
+  the tested 10GbE card:
+```
+    numactl --cpubind=X --membind=X <command>
+```
+
 # ib-bw: Test InfiniBand bandwidth
 
 This test measures the InfiniBand throughput from one device to another,
@@ -204,6 +204,8 @@ on physically distinct cards.
     #bytes     #iterations    BW peak[Gb/sec]    BW average[Gb/sec]   MsgRate[Mpps]
     65536      5000             51.05              51.04              0.097356
     ---------------------------------------------------------------------------------------
+    
+Note that the theoretical maximum bandwidth for an FDR InfiniBand card is 54.5 Gbit/s.
 
 ## Compliance:
 
