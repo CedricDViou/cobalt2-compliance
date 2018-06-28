@@ -1,7 +1,12 @@
 # COBALT2 Compliance Tests
 
-For compliance for COBALT2, the following tests are provided. Each has an explaining
-section further down:
+For compliance for COBALT2, the following tests are provided. These tests measure several
+key performance figures at the application level. Any bottlenecks imposed by individual
+hardware components or by the OS are thus revealed.
+
+Each test is explained in a section further down in this document on how to run it and
+how to verify compliance. The tests require high performance, but not maximum theoretical
+performance, for compliance.
 
 * **mem-test:** Tests memory bandwidth (DRAM) performance.
 * **gpu-copy:** Tests PCIe bandwidth performance towards NVIDIA GPUs.
@@ -14,13 +19,13 @@ The remaining tests are performed using common open source tools.
 For a machine to be compliant, all tests must show compliance under
 the following system settings:
 
-* Set the CPU frequency scaling to `performance', f.e. by:
+* Set the CPU frequency scaling to *performance*, f.e. by:
 ```
     cpupower frequency-set -g performance
 ``` 
 * Disable Intel Turbo Boost, f.e. by:
 ```
-   echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+    echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
 ```
 
 # Building the tests
@@ -40,17 +45,17 @@ libraries, respectively.
     make
 ```
 
-# Hints increase test performance (optional):
+# Tips to increase performance (if necessary):
 
 * Schedule the tests with real-time priority:
 ```
     chrt -f 1 <command>
 ```
-* Schedule the test on a specific NUMA node (X=0 or 1):
+* For `eth-test`, schedule the test on a specific NUMA node (X=0 or 1):
 ```
     numactl --cpubind=X --membind=X <command>
 ```
-* For eth-test, tune the Linux network and UDP buffers, f.e.:
+* For `eth-test`, tune the Linux network and UDP buffers, f.e.:
 ```
     sysctl -w net.core.rmem_max=16777216
     sysctl -w net.core.rmem_default=16777216
@@ -112,18 +117,18 @@ and a receiving machine. The receiving machine is the machine tested.
 
 ## To run:
 
-  First, on the test (receiving) machine, start:
+First, on the test (receiving) machine, start:
 
     ./eth-test-receive -H <hostname>
 
-  Then, on the sending machine, start:
+Then, on the sending machine, start:
 
     ./eth-test-send -H <hostname>
 
-  Where <hostname> is the DNS name or IP address of the interface to test
-  (on the receiving machine).
+Where `<hostname>` is the DNS name or IP address of the interface of the
+receiving machine to test.
 
-## Example output (receiving machine):
+## Example output (on receiving machine):
 
     [...]
     ----- Test results -----
@@ -145,18 +150,18 @@ needed for this test. The sending machine is the machine tested.
 
 ## To run:
 
-  First, on the receiving machine, start:
+First, on the receiving machine, start:
 
     ib_write_bw -d <ibdevice>
 
-  Then, on the test (sending) machine, start:
+Then, on the test (sending) machine, start:
 
     ib_write_bw -d <ibdevice> --report_gbits <hostname>
 
-  Where <hostname> is the DNS name or IP address of the receiving
-  machine, and <ibdevice> is a specific InfiniBand device to use in
-  the test (f.e. mlx4_0, mlx4_1, see /sys/class/infiniband).
-  The sending and receiving interfaces must be distinct.
+Where `<hostname>` is the DNS name or IP address of the receiving machine,
+and `<ibdevice>` is a specific InfiniBand device to use in the test
+(f.e. `mlx4_0`, `mlx4_1`, see `/sys/class/infiniband`). The sending and
+receiving interfaces must be distinct.
 
 ## Example output (on sending machine):
 
