@@ -1,12 +1,11 @@
 # COBALT2 Compliance Tests
 
 For compliance for COBALT2, the following tests are provided. These tests measure several
-key performance figures at the application level. Any bottlenecks imposed by individual
-hardware components or by the OS are thus revealed.
+key performance figures at the application level. For compliance, it is sufficient to
+reach the described treshholds, not the theoretical maxima.
 
 Each test is explained in a section further down in this document on how to run it and
-how to verify compliance. The tests require high performance, but not maximum theoretical
-performance, for compliance.
+how to verify compliance.
 
 * **mem-test:** Tests memory bandwidth (DRAM) performance.
 * **gpu-copy:** Tests PCIe bandwidth performance towards NVIDIA GPUs.
@@ -15,6 +14,16 @@ performance, for compliance.
 
 Some of these tests require compilation of provided C code (see "Building the tests" below).
 The remaining tests are performed using common open source tools.
+
+# System requirements
+
+A single system is needed in the offered configuration, with Linux (and drivers) installed.
+Some basic HPC tuning of the OS could be required to show the hardware capabilities and thus
+to reach compliance. A connection between the two required InfiniBand cards must be
+present.
+
+Furthermore, an additional system with sufficient capacity and connectivity to send 9 Gbit/s
+to any 10GbE port on the offered system is required.
 
 For a machine to be compliant, all tests must show compliance under
 the following system settings:
@@ -51,25 +60,12 @@ libraries, respectively.
 ```
     chrt -f 1 <command>
 ```
-* For `eth-test`, schedule the test on a specific NUMA node (X=0 or 1):
-```
-    numactl --cpubind=X --membind=X <command>
-```
-* For `eth-test`, tune the Linux network and UDP buffers, f.e.:
-```
-    sysctl -w net.core.rmem_max=16777216
-    sysctl -w net.core.rmem_default=16777216
-    sysctl -w net.core.wmem_max=16777216
-    sysctl -w net.core.wmem_default=16777216
-    sysctl -w net.core.netdev_max_backlog=250000
-    sysctl -w net.ipv4.udp_mem='262144 327680 393216'
-```
 
 # mem-test: Test DRAM performance
 
-This test emulates all memory read/writes/copies/transposes needed by COBALT
-on a single production node. It distributes these operations over the available
-NUMA domains.
+This test emulates all memory read/writes/copies/transposes needed by the COBALT
+application on a single production node. It distributes these operations over the
+available NUMA domains.
 
 ## To run:
 
@@ -90,8 +86,12 @@ The measured speed must be >=99.75% of the desired speed.
 
 # gpu-copy: Test PCIe bandwidth to GPUs
 
+This test ensures that no significant PCIe bottlenecks exist between the CPUs
+and the GPUs.
+
 This test copies large amounts of data in parallel to and from all available
-NVIDIA GPUs, and measures the resulting total transfer speed.
+NVIDIA GPUs, and measures the resulting total transfer speed. It thus puts
+load on all NUMA domains in which a GPU is present.
 
 ## To run:
 
@@ -104,16 +104,46 @@ NVIDIA GPUs, and measures the resulting total transfer speed.
     Test version:      1.0
     Total write speed: 188.32 Gbit/s
     Total read speed:  198.98 Gbit/s
+    
+Note that the theoretical maximum unidirectional bandwidth is 252 Gbit/s
+for 2 GPUs, if both are connected through dedicated PCI 3.0 x16 links.
 
 ## Compliance:
 
 Both total read and write speeds must be >=180 Gbit/s.
 
+## Tips to increase performance (if necessary):
+
+* Enable Jumbo frames, f.e. by:
+```
+    ip link set ethX mtu 9000
+```
+* Increase the Linux network buffers, f.e. by:
+```
+    sysctl -w net.core.rmem_max=16777216
+    sysctl -w net.core.rmem_default=16777216
+    sysctl -w net.core.wmem_max=16777216
+    sysctl -w net.core.wmem_default=16777216
+    sysctl -w net.core.netdev_max_backlog=250000
+    sysctl -w net.ipv4.udp_mem='262144 327680 393216'
+```
+* Constrict the test to the CPU in the NUMA node (X=0 or 1) hosting
+  the tested 10GbE card:
+```
+    numactl --cpubind=X --membind=X <command>
+```
+
 # eth-test: Test 10GbE UDP reception
 
 This test streams 9 Gbit/s of UDP data to a single 10GbE port. Two machines
-are needed for this test, with a 10GbE connection between them: a sending
-and a receiving machine. The receiving machine is the machine tested.
+are needed for this test: one to send and one to receive the data. The
+receiving machine is the machine tested.
+
+The sending machine needs to be sufficiently powerful to send 9 Gbit/s to
+the receiving 10GbE port, using one or more NICs. When in doubt, this
+can be verified with common network monitoring tools.
+
+**Jumbo frames** must be enabled for the participating NICs.
 
 ## To run:
 
@@ -135,6 +165,8 @@ receiving machine to test.
     Test version: 1.0
     Total speed:  8.80 Gbit/s
     Average loss: 2.271%
+    
+Note that the theoretical maximum bandwidth is 9.9 Gbit/s for a 10GbE port.
 
 ## Compliance:
 
@@ -161,7 +193,10 @@ Then, on the test (sending) machine, start:
 Where `<hostname>` is the DNS name or IP address of the receiving machine,
 and `<ibdevice>` is a specific InfiniBand device to use in the test
 (f.e. `mlx4_0`, `mlx4_1`, see `/sys/class/infiniband`). The sending and
-receiving interfaces must be distinct.
+receiving devices must be physically distinct.
+
+Note that with two connected InfiniBand cards in one machine, that machine
+should be capable of acting as both the sender and the receiver.
 
 ## Example output (on sending machine):
 
@@ -174,5 +209,5 @@ receiving interfaces must be distinct.
 ## Compliance:
 
 This test must be repeated for each InfiniBand device in the test machine.
-For each interface, the BW average must be >50 Gb/sec.
+For each interface, the BW average must be >=50 Gb/sec.
 
