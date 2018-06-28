@@ -51,8 +51,8 @@ the following system settings:
     perftest          (providing ib_write_bw)
 ```
 2. Any non-standard paths to these libraries can be added to the Makefile
-as part of the INCLUDES and LFLAGS directives, for the headers and
-libraries, respectively.
+as part of the INCLUDES and LFLAGS directives, for the headers (`-I<path>`) and
+libraries (`-L<path>`), respectively.
 3. Build the tests:
 ```
     make
