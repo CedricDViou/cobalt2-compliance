@@ -19,8 +19,7 @@ The remaining tests are performed using common open source tools.
 
 A single system is needed in the offered configuration, with Linux (and drivers) installed.
 Some basic HPC tuning of the OS could be required to show the hardware capabilities and thus
-to reach compliance. A connection between the two required InfiniBand cards must be
-present.
+to reach compliance. Connections between all its InfiniBand ports must be provided.
 
 Furthermore, an additional system with sufficient capacity and connectivity to send 9 Gbit/s
 to any 10GbE port on the offered system is required.
@@ -178,7 +177,10 @@ loss 0.000%.
 
 This test measures the InfiniBand throughput from one device to another,
 using RDMA transport. Two distinct and connected InfiniBand devices are
-needed for this test. The sending machine is the machine tested.
+needed for this test.
+
+Note that with two connected InfiniBand cards in one machine, that machine
+should be capable of acting as both the sender and the receiver.
 
 ## To run:
 
@@ -188,15 +190,12 @@ First, on the receiving machine, start:
 
 Then, on the test (sending) machine, start:
 
-    ib_write_bw -d <ibdevice> --report_gbits <hostname>
+    ib_write_bw -d <other ibdevice> --report_gbits localhost
 
-Where `<hostname>` is the DNS name or IP address of the receiving machine,
-and `<ibdevice>` is a specific InfiniBand device to use in the test
-(f.e. `mlx4_0`, `mlx4_1`, see `/sys/class/infiniband`). The sending and
-receiving devices must be physically distinct.
-
-Note that with two connected InfiniBand cards in one machine, that machine
-should be capable of acting as both the sender and the receiver.
+Where `<ibdevice>` is a specific InfiniBand device and `<other ibdevice>`
+is another one. Their names are listed in `/sys/class/infiniband/`,
+typically `mlx4_0` and `mlx4_1`. The sending and receiving devices must be
+on physically distinct cards.
 
 ## Example output (on sending machine):
 
@@ -208,6 +207,6 @@ should be capable of acting as both the sender and the receiver.
 
 ## Compliance:
 
-This test must be repeated for each InfiniBand device in the test machine.
-For each interface, the BW average must be >=50 Gb/sec.
+This test must be repeated for sending from each InfiniBand port. For each device,
+the BW average must be >=50.00 Gb/sec.
 
