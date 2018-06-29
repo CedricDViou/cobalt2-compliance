@@ -185,22 +185,26 @@ using RDMA transport. Two distinct and connected InfiniBand devices are
 needed for this test.
 
 Note that with two connected InfiniBand cards in one machine, that machine
-should be capable of acting as both the sender and the receiver.
+should be capable of acting as both the sender and the receiver. It is allowed
+to use a different machine for receiving, however.
 
 ## To run:
 
 First, on the receiving machine, start:
 
-    ib_write_bw -d <ibdevice>
+    ib_write_bw -z -d <ibdevice>
 
 Then, on the test (sending) machine, start:
 
-    ib_write_bw -d <other ibdevice> --report_gbits localhost
+    ib_write_bw -z -d <other ibdevice> --report_gbits localhost
 
 Where `<ibdevice>` is a specific InfiniBand device and `<other ibdevice>`
 is another one. Their names are listed in `/sys/class/infiniband/`,
-typically `mlx4_0` and `mlx4_1`. The sending and receiving devices must be
+typically `mlx5_0` and `mlx5_1`. The sending and receiving devices must be
 on physically distinct cards.
+
+If a different machine is used for receiving, replace `<localhost>` with the
+host name of that machine.
 
 ## Example output (on sending machine):
 
@@ -210,12 +214,13 @@ on physically distinct cards.
     65536      5000             51.05              51.04              0.097356
     ---------------------------------------------------------------------------------------
     
-Note that the theoretical maximum bandwidth for an FDR InfiniBand card is 54.5 Gbit/s.
+Note that the theoretical maximum bandwidth for an FDR InfiniBand card is 54.5 Gbit/s,
+and for an EDR InfiniBand card 100 Gbit/s.
 
 ## Compliance:
 
 This test must be repeated for sending from each InfiniBand port. For each device,
-the BW average must be >=50.00 Gb/sec.
+the BW average must be >=80.00 Gb/sec.
 
 # disk-test: Test HDD throughput
 
