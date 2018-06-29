@@ -6,8 +6,7 @@ reach the described treshholds, not the theoretical maxima.
 
 The primary purpose of these tests is to give an assurance towards fitness for purpose,
 that is, the absence of avoidable performance bottlenecks in unexpected setups. Examples
-include the use of performance-degrading Riser cards and inefficient PCIe cards and
-infrastructure.
+include the use of inefficient PCIe cards and infrastructure.
 
 Each test is explained in a section further down in this document on how to run it and
 how to verify compliance.
@@ -16,6 +15,7 @@ how to verify compliance.
 * **gpu-copy:** Tests PCIe bandwidth performance towards NVIDIA GPUs.
 * **eth-test:** Tests UDP bandwidth of a single 10GbE port.
 * **ib-bw:** Measures the maximum InfiniBand transfer speed.
+* **disk-test:** Measures the sequential HDD throughput.
 
 Some of these tests require compilation of provided C code (see "Building the tests" below).
 The remaining tests are performed using common open source tools.
@@ -216,4 +216,40 @@ Note that the theoretical maximum bandwidth for an FDR InfiniBand card is 54.5 G
 
 This test must be repeated for sending from each InfiniBand port. For each device,
 the BW average must be >=50.00 Gb/sec.
+
+# disk-test: Test HDD throughput
+
+This test measures the speed at which data can be written and read sequentially
+through the file system, and read from the hard-disk controller directly.
+
+The test will measure the disk(s) on which the root filesystem (/) is mounted.
+
+## To run:
+
+    sudo ./disk-test
+
+## Example output:
+
+    Targetting /dev/sda1, using /disk-test.tmp
+    Flushing caches...
+    Write test...
+    1+0 records in
+    1+0 records out
+    1073741824 bytes (1.1 GB) copied, 11.4784 s, 93.5 MB/s
+    Flushing caches...
+    Read test...
+    1+0 records in
+    1+0 records out
+    1073741824 bytes (1.1 GB) copied, 10.7219 s, 100 MB/s
+    Flushing caches...
+    Raw read test...
+    Timing buffered disk reads: 388 MB in  3.00 seconds = 129.18 MB/sec
+    Clean up...
+    Done.
+
+## Compliance:
+
+The root file system must be provided by the hard disks. The disks must be capable of 
+>=80 MB/s of write throughput, >=80 MB/s of read throughput, and >=100 MB/sec of
+raw read throughput.
 
