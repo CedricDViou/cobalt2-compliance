@@ -1,0 +1,34 @@
+#!/bin/bash -eu
+
+TARGET_FILE=/disk-test.tmp
+TARGET_DISK=`mount | awk '{ if($3 == "/") { print $1; } }'`
+FILE_SIZE=$((1024*1024*1024))
+
+function flush {
+  # sync unwritten data
+  sync
+  # drop pagecache/dentries/inodes
+  echo 3 > /proc/sys/vm/drop_caches
+  # flush buffers of block device
+  blockdev --flushbufs $TARGET_DISK
+  # flush HDD buffers
+  hdparm -q -F $TARGET_DISK
+}
+
+echo Targetting $TARGET_DISK, using $TARGET_FILE
+rm -f $TARGET_FILE
+echo Flushing caches...
+flush
+echo Write test...
+dd if=/dev/zero of=$TARGET_FILE oflag=direct bs=$FILE_SIZE count=1
+echo Flushing caches...
+flush
+echo Read test...
+dd of=/dev/null if=$TARGET_FILE iflag=direct bs=$FILE_SIZE count=1
+echo Flushing caches...
+flush
+echo Raw read test...
+hdparm -q -t $TARGET_DISK
+echo Clean up...
+rm -f $TARGET_FILE
+echo Done.
