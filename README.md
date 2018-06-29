@@ -4,6 +4,11 @@ For compliance for COBALT2, the following tests are provided. These tests measur
 key performance figures at the application level. For compliance, it is sufficient to
 reach the described treshholds, not the theoretical maxima.
 
+The primary purpose of these tests is to give an assurance towards fitness for purpose,
+that is, the absence of avoidable performance bottlenecks in unexpected setups. Examples
+include the use of performance-degrading Riser cards and inefficient PCIe cards and
+infrastructure.
+
 Each test is explained in a section further down in this document on how to run it and
 how to verify compliance.
 
@@ -46,8 +51,8 @@ the following system settings:
     perftest          (providing ib_write_bw)
 ```
 2. Any non-standard paths to these libraries can be added to the Makefile
-as part of the INCLUDES and LFLAGS directives, for the headers and
-libraries, respectively.
+as part of the INCLUDES and LFLAGS directives, for the headers (`-I<path>`) and
+libraries (`-L<path>`), respectively.
 3. Build the tests:
 ```
     make
