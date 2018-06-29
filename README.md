@@ -249,7 +249,6 @@ The test will measure the disk(s) on which the root filesystem (/) is mounted.
 
 ## Compliance:
 
-The root file system must be provided by the hard disks. The disks must be capable of 
->=80 MB/s of write throughput, >=80 MB/s of read throughput, and >=100 MB/sec of
-raw read throughput.
+The root file system must be provided by the hard disks. The disks must be capable of >=80 MB/s
+of write throughput, >=80 MB/s of read throughput, and >=100 MB/sec of raw read throughput.
 
