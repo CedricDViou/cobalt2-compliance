@@ -114,7 +114,7 @@ for 2 GPUs, if both are connected through dedicated PCI 3.0 x16 links.
 
 ## Compliance:
 
-Both total read and write speeds must be >=180 Gbit/s.
+The total write speed must be >=180 Gbit/s. The total read speed must be >=180 Gbit/s.
 
 # eth-test: Test 10GbE UDP reception
 
@@ -256,4 +256,3 @@ The test will measure the disk(s) on which the root filesystem (/) is mounted.
 
 The root file system must be provided by the hard disks. The disks must be capable of >=80 MB/s
 of write throughput, >=80 MB/s of read throughput, and >=100 MB/sec of raw read throughput.
-
