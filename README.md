@@ -227,7 +227,8 @@ the BW average must be >=80.00 Gb/sec.
 This test measures the speed at which data can be written and read sequentially
 through the file system, and read from the hard-disk controller directly.
 
-The test will measure the disk(s) on which the root filesystem (/) is mounted.
+The test will measure the disks mounted as `/dev/sd*`. All disks must be individually
+mounted as such, and be filled for at least 50% with data.
 
 ## To run:
 
@@ -235,24 +236,25 @@ The test will measure the disk(s) on which the root filesystem (/) is mounted.
 
 ## Example output:
 
-    Targetting /dev/sda1, using /disk-test.tmp
+    ---------------------------------------------
+    Targetting /dev/sda2, using /var/disk-test.tmp
+    ---------------------------------------------
     Flushing caches...
-    Write test...
+    ----- Write test...
     1+0 records in
     1+0 records out
-    1073741824 bytes (1.1 GB) copied, 11.4784 s, 93.5 MB/s
+    1073741824 bytes (1.1 GB) copied, 8.54419 s, 126 MB/s
     Flushing caches...
-    Read test...
+    ----- Read test...
     1+0 records in
     1+0 records out
-    1073741824 bytes (1.1 GB) copied, 10.7219 s, 100 MB/s
+    1073741824 bytes (1.1 GB) copied, 8.15729 s, 132 MB/s
     Flushing caches...
-    Raw read test...
-    Timing buffered disk reads: 388 MB in  3.00 seconds = 129.18 MB/sec
-    Clean up...
-    Done.
+    ----- Raw read test...
+     Timing buffered disk reads: 402 MB in  3.00 seconds = 133.89 MB/sec
+     Clean up...
 
 ## Compliance:
 
-The root file system must be provided by the hard disks. The disks must be capable of >=80 MB/s
-of write throughput, >=80 MB/s of read throughput, and >=100 MB/sec of raw read throughput.
+Every disk must be capable of >=80 MB/s of write throughput, >=80 MB/s of read throughput,
+and >=100 MB/sec of raw read throughput.

@@ -1,7 +1,6 @@
 #!/bin/bash -eu
 
-TARGET_FILE=/disk-test.tmp
-TARGET_DISK=`mount | awk '{ if($3 == "/") { print $1; } }'`
+FILE_NAME=disk-test.tmp
 FILE_SIZE=$((1024*1024*1024))
 
 function flush {
@@ -15,20 +14,31 @@ function flush {
   hdparm -q -F $TARGET_DISK
 }
 
-echo Targetting $TARGET_DISK, using $TARGET_FILE
-rm -f $TARGET_FILE
-echo Flushing caches...
-flush
-echo Write test...
-dd if=/dev/zero of=$TARGET_FILE oflag=direct bs=$FILE_SIZE count=1
-echo Flushing caches...
-flush
-echo Read test...
-dd of=/dev/null if=$TARGET_FILE iflag=direct bs=$FILE_SIZE count=1
-echo Flushing caches...
-flush
-echo Raw read test...
-hdparm -q -t $TARGET_DISK
-echo Clean up...
-rm -f $TARGET_FILE
+DISKS=`mount | grep '^/dev/sd' | awk '{ print $1; }'`
+
+for TARGET_DISK in $DISKS
+do
+  MOUNT_POINT=`mount | grep "^$TARGET_DISK " | awk '{ print $3; }'`
+  TARGET_FILE="$MOUNT_POINT/$FILE_NAME"
+
+  echo ---------------------------------------------
+  echo Targetting $TARGET_DISK, using $TARGET_FILE
+  echo ---------------------------------------------
+  rm -f $TARGET_FILE
+  echo Flushing caches...
+  flush
+  echo ----- Write test...
+  dd if=/dev/zero of=$TARGET_FILE oflag=direct bs=$FILE_SIZE count=1
+  echo Flushing caches...
+  flush
+  echo ----- Read test...
+  dd of=/dev/null if=$TARGET_FILE iflag=direct bs=$FILE_SIZE count=1
+  echo Flushing caches...
+  flush
+  echo ----- Raw read test...
+  hdparm -q -t $TARGET_DISK
+  echo Clean up...
+  rm -f $TARGET_FILE
+done
+
 echo Done.
