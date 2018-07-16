@@ -18,7 +18,7 @@ DISKS=`mount | grep '^/dev/sd' | awk '{ print $1; }'`
 
 for TARGET_DISK in $DISKS
 do
-  MOUNT_POINT=`mount | grep "^$TARGET_DISK " | awk '{ print $3; }'`
+  MOUNT_POINT=`mount | grep "^$TARGET_DISK " | awk '{ print $3; }' | sed 's#/$##'`
   TARGET_FILE="$MOUNT_POINT/$FILE_NAME"
 
   echo ---------------------------------------------
