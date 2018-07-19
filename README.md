@@ -29,6 +29,7 @@ The following tests must comply on the following nodes, for the cluster to compl
 | --------- | --------- | --------------- |
 | mem-test  | no        | yes             |
 | gpu-copy  | no        | yes             |
+| eth-test  | no        | yes             |
 | ib-bw     | yes       | yes             |
 | disk-test | yes       | yes             |
 
