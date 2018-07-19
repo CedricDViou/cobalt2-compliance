@@ -1,15 +1,21 @@
 # COBALT2 Compliance Tests
 
-For compliance for COBALT2, the following tests are provided. These tests measure several
-key performance figures at the application level. For compliance, it is sufficient to
-reach the described treshholds, not the theoretical maxima.
+This repository contains the compliance tests for the COBALT2 cluster. These tests measure
+several key performance figures at the application level. For compliance, it is sufficient
+to reach the described treshholds, not the theoretical maxima.
 
 The primary purpose of these tests is to give an assurance towards fitness for purpose,
 that is, the absence of avoidable performance bottlenecks in unexpected setups. Examples
 include the use of inefficient PCIe cards and infrastructure.
 
-Each test is explained in a section further down in this document on how to run it and
-how to verify compliance.
+Some of the tests require compilation of provided C code (see "Building the tests" below).
+The remaining tests are performed using common open source tools.
+
+# Tests and cluster compliance
+
+For compliance for COBALT2, the following tests are provided. Each test is explained in
+a section further down in this document on how to run it and how to verify compliance
+for that specific test.
 
 * **mem-test:** Tests memory bandwidth (DRAM) performance.
 * **gpu-copy:** Tests PCIe bandwidth performance towards NVIDIA GPUs.
@@ -17,8 +23,14 @@ how to verify compliance.
 * **ib-bw:** Measures the maximum InfiniBand transfer speed.
 * **disk-test:** Measures the sequential HDD throughput.
 
-Some of these tests require compilation of provided C code (see "Building the tests" below).
-The remaining tests are performed using common open source tools.
+The following tests must comply on the following nodes, for the cluster to comply:
+
+| Test      | Head node | Production node |
+| --------- | --------- | --------------- |
+| mem-test  | no        | yes             |
+| gpu-copy  | no        | yes             |
+| ib-bw     | yes       | yes             |
+| disk-test | yes       | yes             |
 
 # System requirements
 
