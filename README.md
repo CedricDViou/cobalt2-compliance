@@ -269,5 +269,5 @@ mounted as such, and be filled for at least 50% with data.
 
 ## Compliance:
 
-Every disk must be capable of >=80 MB/s of write throughput, >=80 MB/s of read throughput,
+Every disk must be capable of >=80 MB/s of write throughput, >=100 MB/s of read throughput,
 and >=100 MB/sec of raw read throughput.
