@@ -1,5 +1,5 @@
 CFLAGS   = -Wall -O3 -fopenmp
-INCLUDES =
+INCLUDES = -I/usr/local/cuda/include
 LFLAGS   = -lnuma -lpthread
 TARGETS  = gpu-copy eth-test-send eth-test-receive mem-test
 
